@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storageAccountName": {
+      "value": "avsmon12343432"
+    },
+    "subnetId": {
+      "value": "/subscriptions/c64740b6-ed3d-48cc-b46d-1cad26733933/resourceGroups/avsmon/providers/Microsoft.Network/virtualNetworks/avsvnet/subnets/default"
+    },
+    "logAnalyticsWorkspaceName": {
+      "value": "avsmonlaw"
+    },
+    "appInsightsLocation": {
+      "value": "eastus"
+    },
+    "keyvaultName": {
+      "value": "avsmonkv123123"
+    },
+    "vnetId": {
+      "value": "/subscriptions/c64740b6-ed3d-48cc-b46d-1cad26733933/resourceGroups/avsmon/providers/Microsoft.Network/virtualNetworks/avsvnet"
+    }
+  }
+}

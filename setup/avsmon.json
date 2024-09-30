@@ -1,0 +1,483 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.29.47.4906",
+      "templateHash": "16666018743266394176"
+    }
+  },
+  "parameters": {
+    "storageAccountName": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]"
+    },
+    "functionname": {
+      "type": "string",
+      "defaultValue": "avsmonbami1t"
+    },
+    "keyvaultName": {
+      "type": "string"
+    },
+    "collectTelemetry": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "createNewLogAnalyticsWorkspace": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "Tags": {
+      "type": "object",
+      "defaultValue": {
+        "environment": "dev",
+        "project": "avsmon"
+      }
+    },
+    "vnetId": {
+      "type": "string"
+    },
+    "subnetId": {
+      "type": "string"
+    },
+    "sasExpiry": {
+      "type": "string",
+      "defaultValue": "[dateTimeAdd(utcNow(), 'PT2H')]"
+    },
+    "logAnalyticsWorkspaceName": {
+      "type": "string"
+    },
+    "appInsightsLocation": {
+      "type": "string"
+    },
+    "avsNSXTAdmin": {
+      "type": "string"
+    },
+    "avsNSXTAdminPassword": {
+      "type": "securestring"
+    },
+    "vCenterFQDN": {
+      "type": "string"
+    },
+    "avsvCenterAdmin": {
+      "type": "string"
+    },
+    "avsvCenterAdminPassword": {
+      "type": "securestring"
+    }
+  },
+  "variables": {
+    "$fxv#0": "{\n  \"customerUsageAttribution\": {\n    \"SolutionIdentifier\": \"pid-36cc11e1-9ee5-4aaf-928a-832a734af7ca\"\n  }\n}",
+    "$fxv#1": "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",
+    "tempfilename": "functions.zip.tmp",
+    "filename": "functions.zip",
+    "functionsContainerName": "functions",
+    "telemetryInfo": "[json(variables('$fxv#0'))]",
+    "sasConfig": {
+      "signedResourceTypes": "sco",
+      "signedPermission": "r",
+      "signedServices": "b",
+      "signedExpiry": "[parameters('sasExpiry')]",
+      "signedProtocol": "https",
+      "keyToSign": "key2"
+    },
+    "functionSystemAssignedIdentityRoles": [
+      "4633458b-17de-408a-b874-0445c86b69e6",
+      "7f951dda-4ed3-4680-a7ca-43fe172d538d",
+      "b24988ac-6180-42a0-ab88-20f7382dd24c",
+      "b7e6dc6d-f1e8-4753-8033-0f276bb0955b"
+    ]
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+      "apiVersion": "2023-01-01",
+      "name": "[format('{0}/{1}/{2}', parameters('storageAccountName'), 'default', variables('functionsContainerName'))]",
+      "properties": {
+        "immutableStorageWithVersioning": {
+          "enabled": false
+        },
+        "denyEncryptionScopeOverride": false,
+        "defaultEncryptionScope": "$account-encryption-key",
+        "publicAccess": "None"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccountName'), 'default')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices",
+      "apiVersion": "2023-01-01",
+      "name": "[format('{0}/{1}', parameters('storageAccountName'), 'default')]",
+      "properties": {
+        "cors": {
+          "corsRules": []
+        },
+        "deleteRetentionPolicy": {
+          "enabled": false
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2024-04-01-preview",
+      "name": "[parameters('keyvaultName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('Tags')]",
+      "properties": {
+        "sku": {
+          "family": "A",
+          "name": "standard"
+        },
+        "tenantId": "[subscription().tenantId]",
+        "enabledForDeployment": false,
+        "enabledForDiskEncryption": false,
+        "enabledForTemplateDeployment": false,
+        "enableSoftDelete": true,
+        "softDeleteRetentionInDays": 90,
+        "enableRbacAuthorization": true,
+        "provisioningState": "Succeeded",
+        "publicNetworkAccess": "Enabled",
+        "enablePurgeProtection": true
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2021-11-01-preview",
+      "name": "[format('{0}/{1}', parameters('keyvaultName'), 'avsNSXTAdmin')]",
+      "tags": "[parameters('Tags')]",
+      "properties": {
+        "attributes": {
+          "enabled": true
+        },
+        "contentType": "string",
+        "value": "[parameters('avsNSXTAdmin')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyvaultName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2021-11-01-preview",
+      "name": "[format('{0}/{1}', parameters('keyvaultName'), 'avsNSXTAdminPassword')]",
+      "tags": "[parameters('Tags')]",
+      "properties": {
+        "attributes": {
+          "enabled": true
+        },
+        "contentType": "string",
+        "value": "[parameters('avsNSXTAdminPassword')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyvaultName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2021-11-01-preview",
+      "name": "[format('{0}/{1}', parameters('keyvaultName'), 'avsvCenterAdmin')]",
+      "tags": "[parameters('Tags')]",
+      "properties": {
+        "attributes": {
+          "enabled": true
+        },
+        "contentType": "string",
+        "value": "[parameters('avsvCenterAdmin')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyvaultName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2021-11-01-preview",
+      "name": "[format('{0}/{1}', parameters('keyvaultName'), 'avsvCenterAdminPassword')]",
+      "tags": "[parameters('Tags')]",
+      "properties": {
+        "attributes": {
+          "enabled": true
+        },
+        "contentType": "string",
+        "value": "[parameters('avsvCenterAdminPassword')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyvaultName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2021-11-01-preview",
+      "name": "[format('{0}/{1}', parameters('keyvaultName'), 'vCenterFQDN')]",
+      "tags": "[parameters('Tags')]",
+      "properties": {
+        "attributes": {
+          "enabled": true
+        },
+        "contentType": "string",
+        "value": "[parameters('vCenterFQDN')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyvaultName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2023-01-01",
+      "name": "[parameters('storageAccountName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('Tags')]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "accessTier": "Hot",
+        "allowBlobPublicAccess": false,
+        "allowSharedKeyAccess": true,
+        "supportsHttpsTrafficOnly": true
+      }
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2021-03-01",
+      "name": "[format('{0}-farm', parameters('functionname'))]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('Tags')]",
+      "sku": {
+        "name": "EP1",
+        "tier": "ElasticPremium",
+        "size": "EP1",
+        "family": "EP",
+        "capacity": 1
+      },
+      "properties": {
+        "elasticScaleEnabled": true
+      },
+      "kind": "elastic"
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2023-12-01",
+      "name": "[parameters('functionname')]",
+      "location": "[parameters('location')]",
+      "kind": "functionapp",
+      "tags": "[parameters('Tags')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "properties": {
+        "enabled": true,
+        "hostNameSslStates": [
+          {
+            "name": "[format('{0}.azurewebsites.net', parameters('functionname'))]",
+            "sslState": "Disabled",
+            "hostType": "Standard"
+          },
+          {
+            "name": "[format('{0}.azurewebsites.net', parameters('functionname'))]",
+            "sslState": "Disabled",
+            "hostType": "Repository"
+          }
+        ],
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', format('{0}-farm', parameters('functionname')))]",
+        "reserved": false,
+        "isXenon": false,
+        "hyperV": false,
+        "siteConfig": {
+          "numberOfWorkers": 1,
+          "acrUseManagedIdentityCreds": false,
+          "alwaysOn": false,
+          "ipSecurityRestrictions": [
+            {
+              "ipAddress": "Any",
+              "action": "Allow",
+              "priority": 1,
+              "name": "Allow all",
+              "description": "Allow all access"
+            }
+          ],
+          "scmIpSecurityRestrictions": [
+            {
+              "ipAddress": "Any",
+              "action": "Allow",
+              "priority": 1,
+              "name": "Allow all",
+              "description": "Allow all access"
+            }
+          ],
+          "http20Enabled": false,
+          "functionAppScaleLimit": 200,
+          "minimumElasticInstanceCount": 1,
+          "minTlsVersion": "1.2",
+          "cors": {
+            "allowedOrigins": [
+              "https://portal.azure.com"
+            ],
+            "supportCredentials": true
+          }
+        },
+        "scmSiteAlsoStopped": false,
+        "clientAffinityEnabled": false,
+        "clientCertEnabled": false,
+        "clientCertMode": "Required",
+        "hostNamesDisabled": false,
+        "containerSize": 1536,
+        "dailyMemoryTimeQuota": 0,
+        "httpsOnly": true,
+        "redundancyMode": "None",
+        "storageAccountRequired": false,
+        "keyVaultReferenceIdentity": "SystemAssigned",
+        "vnetRouteAllEnabled": true,
+        "virtualNetworkSubnetId": "[parameters('subnetId')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', format('{0}-farm', parameters('functionname')))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "functionapproleassignment",
+        "count": "[length(variables('functionSystemAssignedIdentityRoles'))]"
+      },
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "name": "[guid(subscription().subscriptionId, parameters('functionname'), format('functionapproleassignment-{0}', copyIndex()))]",
+      "properties": {
+        "principalId": "[reference(resourceId('Microsoft.Web/sites', parameters('functionname')), '2023-12-01', 'full').identity.principalId]",
+        "roleDefinitionId": "[format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Authorization/roleDefinitions/{2}', subscription().subscriptionId, resourceGroup().name, variables('functionSystemAssignedIdentityRoles')[copyIndex()])]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('functionname'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites/config",
+      "apiVersion": "2021-03-01",
+      "name": "[format('{0}/{1}', parameters('functionname'), 'appsettings')]",
+      "properties": {
+        "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix={2}', parameters('storageAccountName'), listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2023-01-01').keys[0].value, environment().suffixes.storage)]",
+        "AzureWebJobsStorage": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix={2}', parameters('storageAccountName'), listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2023-01-01').keys[0].value, environment().suffixes.storage)]",
+        "WEBSITE_CONTENTSHARE": "[parameters('storageAccountName')]",
+        "FUNCTIONS_WORKER_RUNTIME": "powershell",
+        "FUNCTIONS_EXTENSION_VERSION": "~4",
+        "ResourceGroup": "[resourceGroup().name]",
+        "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.Insights/components', parameters('functionname')), '2020-02-02-preview').InstrumentationKey]",
+        "APPLICATIONINSIGHTS_CONNECTION_STRING": "[format('InstrumentationKey={0}', reference(resourceId('Microsoft.Insights/components', parameters('functionname')), '2020-02-02-preview').InstrumentationKey)]",
+        "ApplicationInsightsAgent_EXTENSION_VERSION": "~2"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Insights/components', parameters('functionname'))]",
+        "[resourceId('Microsoft.Web/sites', parameters('functionname'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Insights/components",
+      "apiVersion": "2020-02-02",
+      "name": "[parameters('functionname')]",
+      "tags": "[parameters('Tags')]",
+      "location": "[parameters('appInsightsLocation')]",
+      "kind": "web",
+      "properties": {
+        "Application_Type": "web",
+        "publicNetworkAccessForIngestion": "Enabled",
+        "publicNetworkAccessForQuery": "Enabled",
+        "WorkspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deploymentScripts",
+      "apiVersion": "2020-10-01",
+      "name": "[format('deployscript-Function-{0}', parameters('functionname'))]",
+      "tags": "[parameters('Tags')]",
+      "location": "[parameters('location')]",
+      "kind": "AzureCLI",
+      "properties": {
+        "azCliVersion": "2.42.0",
+        "timeout": "PT5M",
+        "retentionInterval": "PT1H",
+        "environmentVariables": [
+          {
+            "name": "AZURE_STORAGE_ACCOUNT",
+            "value": "[parameters('storageAccountName')]"
+          },
+          {
+            "name": "AZURE_STORAGE_KEY",
+            "secureValue": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2023-01-01').keys[0].value]"
+          },
+          {
+            "name": "CONTENT",
+            "value": "[variables('$fxv#1')]"
+          }
+        ],
+        "scriptContent": "[format('echo \"$CONTENT\" > {0} && cat {1} | base64 -d > {2} && az storage blob upload -f {3} -c {4} -n {5} --overwrite true', variables('tempfilename'), variables('tempfilename'), variables('filename'), variables('filename'), variables('functionsContainerName'), variables('filename'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites/config', parameters('functionname'), 'appsettings')]",
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites/extensions",
+      "apiVersion": "2021-02-01",
+      "name": "[format('{0}/{1}', parameters('functionname'), 'MSDeploy')]",
+      "properties": {
+        "packageUri": "[format('{0}{1}/{2}?{3}', reference(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2023-01-01').primaryEndpoints.blob, variables('functionsContainerName'), variables('filename'), listAccountSAS(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2023-01-01', variables('sasConfig')).accountSasToken)]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('functionname'))]",
+        "[resourceId('Microsoft.Resources/deploymentScripts', format('deployscript-Function-{0}', parameters('functionname')))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('createNewLogAnalyticsWorkspace')]",
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "apiVersion": "2022-10-01",
+      "name": "[parameters('logAnalyticsWorkspaceName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('Tags')]",
+      "properties": {
+        "sku": {
+          "name": "PerGB2018"
+        }
+      }
+    },
+    {
+      "condition": "[parameters('collectTelemetry')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[variables('telemetryInfo').customerUsageAttribution.SolutionIdentifier]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {},
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.29.47.4906",
+              "templateHash": "18346123596328262765"
+            }
+          },
+          "resources": []
+        }
+      }
+    }
+  ]
+}

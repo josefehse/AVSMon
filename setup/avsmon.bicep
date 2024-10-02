@@ -33,7 +33,7 @@ var tempfilename = 'functions.zip.tmp'
 var filename='functions.zip'
 var functionsContainerName = 'functions'
 var telemetryInfo = json(loadTextContent('./telemetry.json'))
-
+var userIdentityName = '${functionname}-identity'
 var sasConfig = {
   signedResourceTypes: 'sco'
   signedPermission: 'r'
@@ -42,6 +42,16 @@ var sasConfig = {
   signedProtocol: 'https'
   keyToSign: 'key2'
 }
+
+var functionUserAssignedIdentityRoles= [
+  '4633458b-17de-408a-b874-0445c86b69e6'  // keyvault reader role
+  'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'  // Storage Blob Data Owner
+  'ba92f5b4-2d11-453d-a403-e96b0029c9fe'  // storage blob data reader role
+  '92aaf0da-9dab-42b6-94a3-d43ce8d16293'  // log analytics contributor role
+]
+var functionSystemAssignedIdentityRoles= [
+  'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'  // Storage Blob Data Owner
+]
 // resource PrivateDNSZoneforwebsites 'Microsoft.Network/privateDnsZones@2024-06-01' = if (createDNSzone) {
 //   name: 'privatelink.azurewebsites.net'
 //   location: 'global'
@@ -60,6 +70,22 @@ var sasConfig = {
 //     }
 //   }
 // }
+
+resource userManagedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: userIdentityName
+  location: location
+  tags: Tags
+}
+
+module userIdentityRoleAssignmentRG './modules/roleassignment.bicep' = [for (roledefinitionId, i) in functionUserAssignedIdentityRoles:  {
+  name: '${userIdentityName}-${i}-RG'
+  params: {
+    resourcename: userIdentityName
+    principalId: userManagedIdentity.properties.principalId
+    roleDefinitionId: roledefinitionId
+    roleShortName: roledefinitionId
+  }
+}]
 
 resource vault 'Microsoft.KeyVault/vaults@2024-04-01-preview' = {
   name: keyvaultName
@@ -178,19 +204,32 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
         publicAccess: 'None'
       }
     }
-    // resource container2 'containers'={
-    //   name: 'applications'
-    //   properties: {
-    //     immutableStorageWithVersioning: {
-    //         enabled: false
-    //     }
-    //     denyEncryptionScopeOverride: false
-    //     defaultEncryptionScope: '$account-encryption-key'
-    //     publicAccess: 'None'
-    //   }
-    // }
+  }
+  resource fileshare 'fileServices' = {
+    name: 'default'
+    resource fileshare 'shares' = {
+      name: storageAccountName
+      properties: {
+        shareQuota: 1024
+        accessTier: 'TransactionOptimized'
+        enabledProtocols: 'SMB'
+      }
+    }
   }
 }
+resource kvsecret6 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+  name: 'azurefilesconnectionstring'
+  tags: Tags
+  parent: vault
+  properties: {
+    attributes: {
+      enabled: true
+    }
+    contentType: 'string'
+    value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
+  }
+}
+
 // private endpoint for the function app
 // resource privateendpoint 'Microsoft.Network/privateEndpoints@2021-03-01' = {
 //   name: '${functionname}-pe'
@@ -242,10 +281,10 @@ resource azfunctionsite 'Microsoft.Web/sites@2023-12-01' = {
   kind: 'functionapp'
   tags: Tags
   identity: {
-      type: 'SystemAssigned'
-      // userAssignedIdentities: {
-      //     '${userManagedIdentity}': {}
-      // }
+      type: 'SystemAssigned, UserAssigned'
+      userAssignedIdentities: {
+          '${userManagedIdentity.id}': {}
+      }
   }  
   properties: {
       enabled: true      
@@ -308,43 +347,48 @@ resource azfunctionsite 'Microsoft.Web/sites@2023-12-01' = {
       httpsOnly: true
       redundancyMode: 'None'
       storageAccountRequired: false
-      keyVaultReferenceIdentity: 'SystemAssigned'
+      keyVaultReferenceIdentity: userManagedIdentity.id
       vnetRouteAllEnabled: true
       virtualNetworkSubnetId: subnetId
   }
 }
-var functionSystemAssignedIdentityRoles= [
-  '4633458b-17de-408a-b874-0445c86b69e6'   //keyvault reader role
-  '7f951dda-4ed3-4680-a7ca-43fe172d538d'   //log analytics contributor role
-  'b24988ac-6180-42a0-ab88-20f7382dd24c'   //storage blob data contributor role
-  'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'  //log analytics reader role
-]
-// Assign the required permissions to the function app once it is created
-resource functionapproleassignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for (roledefinitionId, i) in functionSystemAssignedIdentityRoles:  {
-  name: guid(subscription().subscriptionId, functionname, 'functionapproleassignment-${i}')
-  properties: {
+
+// // Assign the required permissions to the function app once it is created
+// resource functionapproleassignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for (roledefinitionId, i) in functionSystemAssignedIdentityRoles:  {
+//   name: guid(subscription().subscriptionId, functionname, 'functionapproleassignment-${i}')
+//   properties: {
+//     principalId: azfunctionsite.identity.principalId
+//     roleDefinitionId: '/subscriptions/${subscription().subscriptionId}/resourceGroups/${resourceGroup().name}/providers/Microsoft.Authorization/roleDefinitions/${roledefinitionId}'
+//   }
+// }]
+
+module SystemIdentityRoleAssignment './modules/roleassignment.bicep' = [for (roledefinitionId, i) in functionSystemAssignedIdentityRoles:  {
+  name: 'SystemAssignedIdentityRole-${i}'
+  params: {
+    resourcename: azfunctionsite.name
     principalId: azfunctionsite.identity.principalId
-    roleDefinitionId: '/subscriptions/${subscription().subscriptionId}/resourceGroups/${resourceGroup().name}/providers/Microsoft.Authorization/roleDefinitions/${roledefinitionId}'
+    roleDefinitionId: roledefinitionId
+    roleShortName: roledefinitionId
   }
 }]
 resource azfunctionsiteconfig 'Microsoft.Web/sites/config@2021-03-01' = {
   name: 'appsettings'
   parent: azfunctionsite
-  // dependsOn: [
-  //   roleAssignment
-  // ]
   properties: {
-    WEBSITE_CONTENTAZUREFILECONNECTIONSTRING:'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
-    AzureWebJobsStorage:'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
+    WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: '@Microsoft.KeyVault(VaultName=${keyvaultName};SecretName=azurefilesconnectionstring)'
+    AzureWebJobsStorage__accountName: storageAccount.name
     WEBSITE_CONTENTSHARE : storageAccount.name
+    MSI_CLIENT_ID: userManagedIdentity.properties.clientId
     FUNCTIONS_WORKER_RUNTIME:'powershell'
     FUNCTIONS_EXTENSION_VERSION:'~4'
     ResourceGroup: resourceGroup().name
     APPINSIGHTS_INSTRUMENTATIONKEY: reference(appinsights.id, '2020-02-02-preview').InstrumentationKey
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'InstrumentationKey=${reference(appinsights.id, '2020-02-02-preview').InstrumentationKey}'
     ApplicationInsightsAgent_EXTENSION_VERSION: '~2'
+    WEBSITE_SKIP_CONTENTSHARE_VALIDATION: '1'
   }
 }
+  
 resource appinsights 'Microsoft.Insights/components@2020-02-02' = {
   name: functionname
   tags: Tags
@@ -365,12 +409,12 @@ resource deploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   tags: Tags
   location: location
   kind: 'AzureCLI'
-  // identity: {
-  //   type: 'UserAssigned'
-  //   userAssignedIdentities: {
-  //     '${userManagedIdentity}': {}
-  //   }
-  // }
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${userManagedIdentity.id}': {}
+    }
+  }
   properties: {
     azCliVersion: '2.42.0'
     timeout: 'PT5M'
@@ -381,15 +425,11 @@ resource deploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
         value: storageAccount.name
       }
       {
-        name: 'AZURE_STORAGE_KEY'
-        secureValue: storageAccount.listKeys().keys[0].value
-      }
-      {
         name: 'CONTENT'
         value: loadFileAsBase64('./functions/functions.zip')
       }
     ]
-    scriptContent: 'echo "$CONTENT" > ${tempfilename} && cat ${tempfilename} | base64 -d > ${filename} && az storage blob upload -f ${filename} -c ${functionsContainerName} -n ${filename} --overwrite true'
+    scriptContent: 'echo "$CONTENT" > ${tempfilename} && cat ${tempfilename} | base64 -d > ${filename} && az storage blob upload -f ${filename} -c ${functionsContainerName} -n ${filename} --auth-mode login --overwrite true'
   }
 }
 resource deployfunctions 'Microsoft.Web/sites/extensions@2021-02-01' = {

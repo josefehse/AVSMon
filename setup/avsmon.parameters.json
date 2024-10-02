@@ -6,7 +6,7 @@
       "value": "avsmon12343432"
     },
     "subnetId": {
-      "value": "/subscriptions/c64740b6-ed3d-48cc-b46d-1cad26733933/resourceGroups/avsmon/providers/Microsoft.Network/virtualNetworks/avsvnet/subnets/default"
+      "value": "/subscriptions/c64740b6-ed3d-48cc-b46d-1cad26733933/resourceGroups/avsmon/providers/Microsoft.Network/virtualNetworks/avsnet/subnets/avsmon"
     },
     "logAnalyticsWorkspaceName": {
       "value": "avsmonlaw"
@@ -17,8 +17,23 @@
     "keyvaultName": {
       "value": "avsmonkv123123"
     },
+    "avsNSXTAdmin": {
+      "value": "avsmonkv123123"
+    },
+    "avsNSXTAdminPassword": {
+      "value": "avsmonkv123123"
+    },
+    "avsvCenterAdmin": {
+      "value": "avsmonkv123123"
+    },
+    "avsvCenterAdminPassword": {
+      "value": "avsmonkv123123"
+    },
     "vnetId": {
-      "value": "/subscriptions/c64740b6-ed3d-48cc-b46d-1cad26733933/resourceGroups/avsmon/providers/Microsoft.Network/virtualNetworks/avsvnet"
+      "value": "/subscriptions/c64740b6-ed3d-48cc-b46d-1cad26733933/resourceGroups/avsmon/providers/Microsoft.Network/virtualNetworks/avsnet"
+    },
+    "vCenterFQDN": {
+        "value": "1234"
     }
   }
 }

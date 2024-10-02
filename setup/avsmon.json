@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.29.47.4906",
-      "templateHash": "16666018743266394176"
+      "templateHash": "6519999739419474434"
     }
   },
   "parameters": {
@@ -72,11 +72,12 @@
   },
   "variables": {
     "$fxv#0": "{\n  \"customerUsageAttribution\": {\n    \"SolutionIdentifier\": \"pid-36cc11e1-9ee5-4aaf-928a-832a734af7ca\"\n  }\n}",
-    "$fxv#1": "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",
+    "$fxv#1": "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",
     "tempfilename": "functions.zip.tmp",
     "filename": "functions.zip",
     "functionsContainerName": "functions",
     "telemetryInfo": "[json(variables('$fxv#0'))]",
+    "userIdentityName": "[format('{0}-identity', parameters('functionname'))]",
     "sasConfig": {
       "signedResourceTypes": "sco",
       "signedPermission": "r",
@@ -85,10 +86,13 @@
       "signedProtocol": "https",
       "keyToSign": "key2"
     },
-    "functionSystemAssignedIdentityRoles": [
+    "functionUserAssignedIdentityRoles": [
       "4633458b-17de-408a-b874-0445c86b69e6",
-      "7f951dda-4ed3-4680-a7ca-43fe172d538d",
-      "b24988ac-6180-42a0-ab88-20f7382dd24c",
+      "b7e6dc6d-f1e8-4753-8033-0f276bb0955b",
+      "ba92f5b4-2d11-453d-a403-e96b0029c9fe",
+      "92aaf0da-9dab-42b6-94a3-d43ce8d16293"
+    ],
+    "functionSystemAssignedIdentityRoles": [
       "b7e6dc6d-f1e8-4753-8033-0f276bb0955b"
     ]
   },
@@ -110,6 +114,19 @@
       ]
     },
     {
+      "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+      "apiVersion": "2023-01-01",
+      "name": "[format('{0}/{1}/{2}', parameters('storageAccountName'), 'default', parameters('storageAccountName'))]",
+      "properties": {
+        "shareQuota": 1024,
+        "accessTier": "TransactionOptimized",
+        "enabledProtocols": "SMB"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/fileServices', parameters('storageAccountName'), 'default')]"
+      ]
+    },
+    {
       "type": "Microsoft.Storage/storageAccounts/blobServices",
       "apiVersion": "2023-01-01",
       "name": "[format('{0}/{1}', parameters('storageAccountName'), 'default')]",
@@ -124,6 +141,21 @@
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
       ]
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/fileServices",
+      "apiVersion": "2023-01-01",
+      "name": "[format('{0}/{1}', parameters('storageAccountName'), 'default')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+      "apiVersion": "2023-01-31",
+      "name": "[variables('userIdentityName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('Tags')]"
     },
     {
       "type": "Microsoft.KeyVault/vaults",
@@ -246,6 +278,23 @@
       }
     },
     {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2021-11-01-preview",
+      "name": "[format('{0}/{1}', parameters('keyvaultName'), 'azurefilesconnectionstring')]",
+      "tags": "[parameters('Tags')]",
+      "properties": {
+        "attributes": {
+          "enabled": true
+        },
+        "contentType": "string",
+        "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix={2}', parameters('storageAccountName'), listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2023-01-01').keys[0].value, environment().suffixes.storage)]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyvaultName'))]"
+      ]
+    },
+    {
       "type": "Microsoft.Web/serverfarms",
       "apiVersion": "2021-03-01",
       "name": "[format('{0}-farm', parameters('functionname'))]",
@@ -271,7 +320,10 @@
       "kind": "functionapp",
       "tags": "[parameters('Tags')]",
       "identity": {
-        "type": "SystemAssigned"
+        "type": "SystemAssigned, UserAssigned",
+        "userAssignedIdentities": {
+          "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userIdentityName')))]": {}
+        }
       },
       "properties": {
         "enabled": true,
@@ -334,28 +386,13 @@
         "httpsOnly": true,
         "redundancyMode": "None",
         "storageAccountRequired": false,
-        "keyVaultReferenceIdentity": "SystemAssigned",
+        "keyVaultReferenceIdentity": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userIdentityName'))]",
         "vnetRouteAllEnabled": true,
         "virtualNetworkSubnetId": "[parameters('subnetId')]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Web/serverfarms', format('{0}-farm', parameters('functionname')))]"
-      ]
-    },
-    {
-      "copy": {
-        "name": "functionapproleassignment",
-        "count": "[length(variables('functionSystemAssignedIdentityRoles'))]"
-      },
-      "type": "Microsoft.Authorization/roleAssignments",
-      "apiVersion": "2022-04-01",
-      "name": "[guid(subscription().subscriptionId, parameters('functionname'), format('functionapproleassignment-{0}', copyIndex()))]",
-      "properties": {
-        "principalId": "[reference(resourceId('Microsoft.Web/sites', parameters('functionname')), '2023-12-01', 'full').identity.principalId]",
-        "roleDefinitionId": "[format('/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Authorization/roleDefinitions/{2}', subscription().subscriptionId, resourceGroup().name, variables('functionSystemAssignedIdentityRoles')[copyIndex()])]"
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.Web/sites', parameters('functionname'))]"
+        "[resourceId('Microsoft.Web/serverfarms', format('{0}-farm', parameters('functionname')))]",
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userIdentityName'))]"
       ]
     },
     {
@@ -363,20 +400,23 @@
       "apiVersion": "2021-03-01",
       "name": "[format('{0}/{1}', parameters('functionname'), 'appsettings')]",
       "properties": {
-        "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix={2}', parameters('storageAccountName'), listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2023-01-01').keys[0].value, environment().suffixes.storage)]",
-        "AzureWebJobsStorage": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix={2}', parameters('storageAccountName'), listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2023-01-01').keys[0].value, environment().suffixes.storage)]",
+        "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=azurefilesconnectionstring)', parameters('keyvaultName'))]",
+        "AzureWebJobsStorage__accountName": "[parameters('storageAccountName')]",
         "WEBSITE_CONTENTSHARE": "[parameters('storageAccountName')]",
+        "MSI_CLIENT_ID": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userIdentityName')), '2023-01-31').clientId]",
         "FUNCTIONS_WORKER_RUNTIME": "powershell",
         "FUNCTIONS_EXTENSION_VERSION": "~4",
         "ResourceGroup": "[resourceGroup().name]",
         "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.Insights/components', parameters('functionname')), '2020-02-02-preview').InstrumentationKey]",
         "APPLICATIONINSIGHTS_CONNECTION_STRING": "[format('InstrumentationKey={0}', reference(resourceId('Microsoft.Insights/components', parameters('functionname')), '2020-02-02-preview').InstrumentationKey)]",
-        "ApplicationInsightsAgent_EXTENSION_VERSION": "~2"
+        "ApplicationInsightsAgent_EXTENSION_VERSION": "~2",
+        "WEBSITE_SKIP_CONTENTSHARE_VALIDATION": "1"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Insights/components', parameters('functionname'))]",
         "[resourceId('Microsoft.Web/sites', parameters('functionname'))]",
-        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userIdentityName'))]"
       ]
     },
     {
@@ -403,6 +443,12 @@
       "tags": "[parameters('Tags')]",
       "location": "[parameters('location')]",
       "kind": "AzureCLI",
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userIdentityName')))]": {}
+        }
+      },
       "properties": {
         "azCliVersion": "2.42.0",
         "timeout": "PT5M",
@@ -413,19 +459,16 @@
             "value": "[parameters('storageAccountName')]"
           },
           {
-            "name": "AZURE_STORAGE_KEY",
-            "secureValue": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2023-01-01').keys[0].value]"
-          },
-          {
             "name": "CONTENT",
             "value": "[variables('$fxv#1')]"
           }
         ],
-        "scriptContent": "[format('echo \"$CONTENT\" > {0} && cat {1} | base64 -d > {2} && az storage blob upload -f {3} -c {4} -n {5} --overwrite true', variables('tempfilename'), variables('tempfilename'), variables('filename'), variables('filename'), variables('functionsContainerName'), variables('filename'))]"
+        "scriptContent": "[format('echo \"$CONTENT\" > {0} && cat {1} | base64 -d > {2} && az storage blob upload -f {3} -c {4} -n {5} --auth-mode login --overwrite true', variables('tempfilename'), variables('tempfilename'), variables('filename'), variables('filename'), variables('functionsContainerName'), variables('filename'))]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Web/sites/config', parameters('functionname'), 'appsettings')]",
-        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userIdentityName'))]"
       ]
     },
     {
@@ -453,6 +496,172 @@
           "name": "PerGB2018"
         }
       }
+    },
+    {
+      "copy": {
+        "name": "userIdentityRoleAssignmentRG",
+        "count": "[length(variables('functionUserAssignedIdentityRoles'))]"
+      },
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('{0}-{1}-RG', variables('userIdentityName'), copyIndex())]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "resourcename": {
+            "value": "[variables('userIdentityName')]"
+          },
+          "principalId": {
+            "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userIdentityName')), '2023-01-31').principalId]"
+          },
+          "roleDefinitionId": {
+            "value": "[variables('functionUserAssignedIdentityRoles')[copyIndex()]]"
+          },
+          "roleShortName": {
+            "value": "[variables('functionUserAssignedIdentityRoles')[copyIndex()]]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.29.47.4906",
+              "templateHash": "3180345282180392905"
+            }
+          },
+          "parameters": {
+            "resourcename": {
+              "type": "string"
+            },
+            "principalId": {
+              "type": "string"
+            },
+            "roleDefinitionId": {
+              "type": "string"
+            },
+            "roleShortName": {
+              "type": "string"
+            },
+            "utcValue": {
+              "type": "string",
+              "defaultValue": "[utcNow()]"
+            }
+          },
+          "variables": {
+            "roleIdtoUse": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "name": "[guid(subscription().id, parameters('principalId'), parameters('roleDefinitionId'))]",
+              "properties": {
+                "description": "[format('{0}-{1}-{2}', parameters('roleShortName'), parameters('resourcename'), parameters('utcValue'))]",
+                "principalId": "[parameters('principalId')]",
+                "principalType": "ServicePrincipal",
+                "roleDefinitionId": "[variables('roleIdtoUse')]"
+              }
+            }
+          ],
+          "outputs": {
+            "roleassignmentname": {
+              "type": "string",
+              "value": "[guid(subscription().id, parameters('principalId'), parameters('roleDefinitionId'))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userIdentityName'))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "SystemIdentityRoleAssignment",
+        "count": "[length(variables('functionSystemAssignedIdentityRoles'))]"
+      },
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('SystemAssignedIdentityRole-{0}', copyIndex())]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "resourcename": {
+            "value": "[parameters('functionname')]"
+          },
+          "principalId": {
+            "value": "[reference(resourceId('Microsoft.Web/sites', parameters('functionname')), '2023-12-01', 'full').identity.principalId]"
+          },
+          "roleDefinitionId": {
+            "value": "[variables('functionSystemAssignedIdentityRoles')[copyIndex()]]"
+          },
+          "roleShortName": {
+            "value": "[variables('functionSystemAssignedIdentityRoles')[copyIndex()]]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.29.47.4906",
+              "templateHash": "3180345282180392905"
+            }
+          },
+          "parameters": {
+            "resourcename": {
+              "type": "string"
+            },
+            "principalId": {
+              "type": "string"
+            },
+            "roleDefinitionId": {
+              "type": "string"
+            },
+            "roleShortName": {
+              "type": "string"
+            },
+            "utcValue": {
+              "type": "string",
+              "defaultValue": "[utcNow()]"
+            }
+          },
+          "variables": {
+            "roleIdtoUse": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "name": "[guid(subscription().id, parameters('principalId'), parameters('roleDefinitionId'))]",
+              "properties": {
+                "description": "[format('{0}-{1}-{2}', parameters('roleShortName'), parameters('resourcename'), parameters('utcValue'))]",
+                "principalId": "[parameters('principalId')]",
+                "principalType": "ServicePrincipal",
+                "roleDefinitionId": "[variables('roleIdtoUse')]"
+              }
+            }
+          ],
+          "outputs": {
+            "roleassignmentname": {
+              "type": "string",
+              "value": "[guid(subscription().id, parameters('principalId'), parameters('roleDefinitionId'))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('functionname'))]"
+      ]
     },
     {
       "condition": "[parameters('collectTelemetry')]",

@@ -185,6 +185,18 @@
 								"required": true
 							},
 							"visible": true
+						},
+                        {
+							"name": "collectTelemetry",
+							"type": "Microsoft.Common.CheckBox",
+							"label": "Collect deployment telemetry.",
+							"toolTip": "Microsoft can correlate these resources used to support the deployments. Microsoft collects this information to provide the best experiences with their products and to operate their business. The telemetry is collected through customer usage attribution. The data is collected and governed by Microsoft's privacy policies, located at https://www.microsoft.com/trustcenter.",
+							"constraints": {
+								"required": false,
+								"validationMessage": "Please acknowledge the legal conditions."
+							},
+							"defaultValue": true
+							
 						}
 					]
 				},
@@ -273,20 +285,23 @@
 		},
         "outputs": {
             "parameters": {
-                "mgname": "[steps('basics').resourceScope.managementGroup.name]",
 				"storageAccountName" : "[steps('Configuration').storageAccountSelector.name]",
 				"location": "[steps('basics').resourceScope.location.name]",
 				"functionname": "[concat(steps('Configuration').instanceName,'-','function')]",
 				"keyvaultName": "[steps('Configuration').keyvaultname]",
 				"vnetId": "[steps('Configuration').virtualNetworkSelection.id]",
-				"subnetId": "[concat(steps('Configuration').virtualNetworkSelection.id, '/subnets/', steps('Configuration').subnet.value)]",
+                "subnetId": "[concat(steps('Configuration').virtualNetworkSelection.id, '/subnets/', steps('Configuration').subnet.value)]",
+                "collectTelemetry": "[steps('Configuration').collectTelemetry]",
+                "createNewLogAnalyticsWS": "[equals(steps('Configuration').LAWStatus, 'New')]",
+                "createNewStorageAccount": "[equals(steps('Configuration').storageAccountSelector.newOrExisting,'new')]",	
 				"logAnalyticsWorkspaceName": "[if(equals(steps('Configuration').LAWStatus, 'Existing'),steps('Configuration').logAnalyticsWorkspaceSelection.name,steps('Configuration').LogAnalyticsWorkspaceResourceNew)]",
 				"appInsightsLocation" : "[steps('Configuration').AppInsightsLocation.value]",
                 "avsNSXTAdmin": "[steps('AVSConfiguration').avsNSXTAdmin]",
                 "avsNSXTAdminPassword": "[steps('AVSConfiguration').avsNSXTAdminPassword]",
                 "avsvCenterAdmin": "[steps('AVSConfiguration').avsvCenterAdmin]",
                 "avsvCenterAdminPassword": "[steps('AVSConfiguration').avsvCenterAdminPassword]",
-                "vCenterFQDN": "[steps('AVSConfiguration').vCenterFQDN]"
+                "vCenterFQDN": "[steps('AVSConfiguration').vCenterFQDN]",
+                "Tags": "[steps('tags').tagsByResource]"
 			},
 			"kind": "ResourceGroup",
             "location": "[steps('basics').resourceScope.location.name]",

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.29.47.4906",
-      "templateHash": "6519999739419474434"
+      "templateHash": "18404189742925558179"
     }
   },
   "parameters": {
@@ -23,13 +23,25 @@
     "keyvaultName": {
       "type": "string"
     },
+    "vnetId": {
+      "type": "string"
+    },
+    "subnetId": {
+      "type": "string"
+    },
     "collectTelemetry": {
       "type": "bool",
       "defaultValue": false
     },
-    "createNewLogAnalyticsWorkspace": {
+    "createNewLogAnalyticsWS": {
       "type": "bool",
       "defaultValue": true
+    },
+    "createNewStorageAccount": {
+      "type": "bool"
+    },
+    "logAnalyticsWorkspaceName": {
+      "type": "string"
     },
     "Tags": {
       "type": "object",
@@ -37,19 +49,6 @@
         "environment": "dev",
         "project": "avsmon"
       }
-    },
-    "vnetId": {
-      "type": "string"
-    },
-    "subnetId": {
-      "type": "string"
-    },
-    "sasExpiry": {
-      "type": "string",
-      "defaultValue": "[dateTimeAdd(utcNow(), 'PT2H')]"
-    },
-    "logAnalyticsWorkspaceName": {
-      "type": "string"
     },
     "appInsightsLocation": {
       "type": "string"
@@ -60,14 +59,18 @@
     "avsNSXTAdminPassword": {
       "type": "securestring"
     },
-    "vCenterFQDN": {
-      "type": "string"
-    },
     "avsvCenterAdmin": {
       "type": "string"
     },
     "avsvCenterAdminPassword": {
       "type": "securestring"
+    },
+    "vCenterFQDN": {
+      "type": "string"
+    },
+    "sasExpiry": {
+      "type": "string",
+      "defaultValue": "[dateTimeAdd(utcNow(), 'PT2H')]"
     }
   },
   "variables": {
@@ -98,6 +101,7 @@
   },
   "resources": [
     {
+      "condition": "[parameters('createNewStorageAccount')]",
       "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
       "apiVersion": "2023-01-01",
       "name": "[format('{0}/{1}/{2}', parameters('storageAccountName'), 'default', variables('functionsContainerName'))]",
@@ -114,6 +118,7 @@
       ]
     },
     {
+      "condition": "[parameters('createNewStorageAccount')]",
       "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
       "apiVersion": "2023-01-01",
       "name": "[format('{0}/{1}/{2}', parameters('storageAccountName'), 'default', parameters('storageAccountName'))]",
@@ -127,6 +132,7 @@
       ]
     },
     {
+      "condition": "[parameters('createNewStorageAccount')]",
       "type": "Microsoft.Storage/storageAccounts/blobServices",
       "apiVersion": "2023-01-01",
       "name": "[format('{0}/{1}', parameters('storageAccountName'), 'default')]",
@@ -143,6 +149,7 @@
       ]
     },
     {
+      "condition": "[parameters('createNewStorageAccount')]",
       "type": "Microsoft.Storage/storageAccounts/fileServices",
       "apiVersion": "2023-01-01",
       "name": "[format('{0}/{1}', parameters('storageAccountName'), 'default')]",
@@ -261,6 +268,7 @@
       ]
     },
     {
+      "condition": "[parameters('createNewStorageAccount')]",
       "type": "Microsoft.Storage/storageAccounts",
       "apiVersion": "2023-01-01",
       "name": "[parameters('storageAccountName')]",
@@ -287,7 +295,7 @@
           "enabled": true
         },
         "contentType": "string",
-        "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix={2}', parameters('storageAccountName'), listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2023-01-01').keys[0].value, environment().suffixes.storage)]"
+        "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix={2}', if(parameters('createNewStorageAccount'), parameters('storageAccountName'), parameters('storageAccountName')), listKeys(if(parameters('createNewStorageAccount'), resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))), if(parameters('createNewStorageAccount'), '2023-01-01', '2023-01-01')).keys[0].value, environment().suffixes.storage)]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
@@ -401,8 +409,8 @@
       "name": "[format('{0}/{1}', parameters('functionname'), 'appsettings')]",
       "properties": {
         "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=azurefilesconnectionstring)', parameters('keyvaultName'))]",
-        "AzureWebJobsStorage__accountName": "[parameters('storageAccountName')]",
-        "WEBSITE_CONTENTSHARE": "[parameters('storageAccountName')]",
+        "AzureWebJobsStorage__accountName": "[if(parameters('createNewStorageAccount'), parameters('storageAccountName'), parameters('storageAccountName'))]",
+        "WEBSITE_CONTENTSHARE": "[if(parameters('createNewStorageAccount'), parameters('storageAccountName'), parameters('storageAccountName'))]",
         "MSI_CLIENT_ID": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userIdentityName')), '2023-01-31').clientId]",
         "FUNCTIONS_WORKER_RUNTIME": "powershell",
         "FUNCTIONS_EXTENSION_VERSION": "~4",
@@ -456,7 +464,7 @@
         "environmentVariables": [
           {
             "name": "AZURE_STORAGE_ACCOUNT",
-            "value": "[parameters('storageAccountName')]"
+            "value": "[if(parameters('createNewStorageAccount'), parameters('storageAccountName'), parameters('storageAccountName'))]"
           },
           {
             "name": "CONTENT",
@@ -476,7 +484,7 @@
       "apiVersion": "2021-02-01",
       "name": "[format('{0}/{1}', parameters('functionname'), 'MSDeploy')]",
       "properties": {
-        "packageUri": "[format('{0}{1}/{2}?{3}', reference(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2023-01-01').primaryEndpoints.blob, variables('functionsContainerName'), variables('filename'), listAccountSAS(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2023-01-01', variables('sasConfig')).accountSasToken)]"
+        "packageUri": "[format('{0}{1}/{2}?{3}', if(parameters('createNewStorageAccount'), reference(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2023-01-01').primaryEndpoints.blob, reference(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2023-01-01').primaryEndpoints.blob), variables('functionsContainerName'), variables('filename'), if(parameters('createNewStorageAccount'), listAccountSAS(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2023-01-01', variables('sasConfig')).accountSasToken, listAccountSAS(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2023-01-01', variables('sasConfig')).accountSasToken))]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Web/sites', parameters('functionname'))]",
@@ -485,7 +493,7 @@
       ]
     },
     {
-      "condition": "[parameters('createNewLogAnalyticsWorkspace')]",
+      "condition": "[parameters('createNewLogAnalyticsWS')]",
       "type": "Microsoft.OperationalInsights/workspaces",
       "apiVersion": "2022-10-01",
       "name": "[parameters('logAnalyticsWorkspaceName')]",

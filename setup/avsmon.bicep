@@ -9,25 +9,27 @@ param storageAccountName string
 param location string = resourceGroup().location
 param functionname string = 'avsmonbami1t'
 param keyvaultName string
+param vnetId string
+param subnetId string
 param collectTelemetry bool = false
-param createNewLogAnalyticsWorkspace bool = true
-
+param createNewLogAnalyticsWS bool = true
+param createNewStorageAccount bool
+param logAnalyticsWorkspaceName string
 param Tags object = {
   environment: 'dev'
   project: 'avsmon'
 }
-param vnetId string
-param subnetId string
-param sasExpiry string = dateTimeAdd(utcNow(), 'PT2H')
-param logAnalyticsWorkspaceName string
 param appInsightsLocation string
+
 param avsNSXTAdmin string
 @secure()
 param avsNSXTAdminPassword string
-param vCenterFQDN string
 param avsvCenterAdmin string
 @secure()
 param avsvCenterAdminPassword string
+param vCenterFQDN string
+
+param sasExpiry string = dateTimeAdd(utcNow(), 'PT2H')
 
 var tempfilename = 'functions.zip.tmp'
 var filename='functions.zip'
@@ -169,7 +171,8 @@ resource kvsecret5 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
     value: vCenterFQDN
   }
 }
-resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
+
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = if (createNewStorageAccount) {
   name: storageAccountName
   location: location
   tags: Tags
@@ -217,6 +220,10 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
     }
   }
 }
+resource existingStorageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = if (!createNewStorageAccount) {
+  name: storageAccountName
+}
+
 resource kvsecret6 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
   name: 'azurefilesconnectionstring'
   tags: Tags
@@ -226,7 +233,7 @@ resource kvsecret6 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
       enabled: true
     }
     contentType: 'string'
-    value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
+    value: 'DefaultEndpointsProtocol=https;AccountName=${createNewStorageAccount ? storageAccount.name : existingStorageAccount.name};AccountKey=${listKeys(createNewStorageAccount ? storageAccount.id: existingStorageAccount.id, createNewStorageAccount ? storageAccount.apiVersion : existingStorageAccount.apiVersion).keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
   }
 }
 
@@ -376,8 +383,8 @@ resource azfunctionsiteconfig 'Microsoft.Web/sites/config@2021-03-01' = {
   parent: azfunctionsite
   properties: {
     WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: '@Microsoft.KeyVault(VaultName=${keyvaultName};SecretName=azurefilesconnectionstring)'
-    AzureWebJobsStorage__accountName: storageAccount.name
-    WEBSITE_CONTENTSHARE : storageAccount.name
+    AzureWebJobsStorage__accountName: createNewStorageAccount ? storageAccount.name : existingStorageAccount.name
+    WEBSITE_CONTENTSHARE : createNewStorageAccount ? storageAccount.name : existingStorageAccount.name
     MSI_CLIENT_ID: userManagedIdentity.properties.clientId
     FUNCTIONS_WORKER_RUNTIME:'powershell'
     FUNCTIONS_EXTENSION_VERSION:'~4'
@@ -422,7 +429,7 @@ resource deploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
     environmentVariables: [
       {
         name: 'AZURE_STORAGE_ACCOUNT'
-        value: storageAccount.name
+        value: createNewStorageAccount ? storageAccount.name : existingStorageAccount.name
       }
       {
         name: 'CONTENT'
@@ -439,10 +446,10 @@ resource deployfunctions 'Microsoft.Web/sites/extensions@2021-02-01' = {
   ]
   name: 'MSDeploy'
   properties: {
-    packageUri: '${storageAccount.properties.primaryEndpoints.blob}${functionsContainerName}/${filename}?${(storageAccount.listAccountSAS(storageAccount.apiVersion, sasConfig).accountSasToken)}'
+    packageUri: '${createNewStorageAccount ? storageAccount.properties.primaryEndpoints.blob : existingStorageAccount.properties.primaryEndpoints.blob}${functionsContainerName}/${filename}?${(createNewStorageAccount ? storageAccount.listAccountSAS(storageAccount.apiVersion, sasConfig).accountSasToken : existingStorageAccount.listAccountSAS(storageAccount.apiVersion, sasConfig).accountSasToken)}'
   }
 }
-resource law 'Microsoft.OperationalInsights/workspaces@2022-10-01' = if(createNewLogAnalyticsWorkspace) {
+resource law 'Microsoft.OperationalInsights/workspaces@2022-10-01' = if(createNewLogAnalyticsWS) {
   name: logAnalyticsWorkspaceName
   location: location
   tags: Tags
@@ -452,6 +459,7 @@ resource law 'Microsoft.OperationalInsights/workspaces@2022-10-01' = if(createNe
     }
   }
 }
+
 module telemetry 'nested_telemetry.bicep' =  if (collectTelemetry) {
   name: telemetryInfo.customerUsageAttribution.SolutionIdentifier
   scope: resourceGroup()

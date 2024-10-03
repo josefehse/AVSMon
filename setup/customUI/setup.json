@@ -106,7 +106,7 @@
                             "type": "Microsoft.Common.TextBox",
                             "label": "Log Analytics Workspace Name for AVS Mon Packs",
                             "subLabel": "",
-                            "defaultValue": "Monster-LA",
+                            "defaultValue": "avsmon-LA",
                             "toolTip": "Log Analytics Workspace Name for AVS Mon.",
                             "constraints": {
                                 "required": "[equals(steps('Configuration').LAWStatus, 'New')]",
@@ -218,7 +218,7 @@
                         },
                         {
                             "name": "avsNSXTAdminPassword",
-                            "type": "Microsoft.Common.TextBox",
+                            "type": "Microsoft.Common.PasswordBox",
                             "label": "AVS NSXT Admin Password",
                             "subLabel": "",
                             "defaultValue": "",
@@ -306,6 +306,7 @@
 			"kind": "ResourceGroup",
             "location": "[steps('basics').resourceScope.location.name]",
             "resourceGroupId": "[steps('basics').resourceScope.resourcegroup.id]"
+            
 		}
 	}
 }

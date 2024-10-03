@@ -2,6 +2,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "PowerShell Interactive Session",
+            "type": "PowerShell",
+            "request": "launch",
+            "cwd": "${cwd}"
+        },
+
+        {
             "name": "Attach to PowerShell Functions",
             "type": "PowerShell",
             "request": "attach",

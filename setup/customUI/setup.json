@@ -306,7 +306,6 @@
 			"kind": "ResourceGroup",
             "location": "[steps('basics').resourceScope.location.name]",
             "resourceGroupId": "[steps('basics').resourceScope.resourcegroup.id]"
-            
 		}
 	}
 }

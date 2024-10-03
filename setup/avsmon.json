@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.29.47.4906",
-      "templateHash": "18404189742925558179"
+      "version": "0.30.23.60470",
+      "templateHash": "2169794336494247941"
     }
   },
   "parameters": {
@@ -23,9 +23,6 @@
     "keyvaultName": {
       "type": "string"
     },
-    "vnetId": {
-      "type": "string"
-    },
     "subnetId": {
       "type": "string"
     },
@@ -41,7 +38,12 @@
       "type": "bool"
     },
     "logAnalyticsWorkspaceName": {
-      "type": "string"
+      "type": "string",
+      "defaultValue": ""
+    },
+    "logAnalyticsWorkspaceResourceId": {
+      "type": "string",
+      "defaultValue": ""
     },
     "Tags": {
       "type": "object",
@@ -49,9 +51,6 @@
         "environment": "dev",
         "project": "avsmon"
       }
-    },
-    "appInsightsLocation": {
-      "type": "string"
     },
     "avsNSXTAdmin": {
       "type": "string"
@@ -74,7 +73,7 @@
     }
   },
   "variables": {
-    "$fxv#0": "{\n  \"customerUsageAttribution\": {\n    \"SolutionIdentifier\": \"pid-36cc11e1-9ee5-4aaf-928a-832a734af7ca\"\n  }\n}",
+    "$fxv#0": "{\r\n  \"customerUsageAttribution\": {\r\n    \"SolutionIdentifier\": \"pid-36cc11e1-9ee5-4aaf-928a-832a734af7ca\"\r\n  }\r\n}",
     "$fxv#1": "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",
     "tempfilename": "functions.zip.tmp",
     "filename": "functions.zip",
@@ -432,13 +431,13 @@
       "apiVersion": "2020-02-02",
       "name": "[parameters('functionname')]",
       "tags": "[parameters('Tags')]",
-      "location": "[parameters('appInsightsLocation')]",
+      "location": "[parameters('location')]",
       "kind": "web",
       "properties": {
         "Application_Type": "web",
         "publicNetworkAccessForIngestion": "Enabled",
         "publicNetworkAccessForQuery": "Enabled",
-        "WorkspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]"
+        "WorkspaceResourceId": "[if(parameters('createNewLogAnalyticsWS'), resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName')), parameters('logAnalyticsWorkspaceResourceId'))]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]"
@@ -538,8 +537,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.29.47.4906",
-              "templateHash": "3180345282180392905"
+              "version": "0.30.23.60470",
+              "templateHash": "4355462422155428190"
             }
           },
           "parameters": {
@@ -621,8 +620,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.29.47.4906",
-              "templateHash": "3180345282180392905"
+              "version": "0.30.23.60470",
+              "templateHash": "4355462422155428190"
             }
           },
           "parameters": {
@@ -688,8 +687,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.29.47.4906",
-              "templateHash": "18346123596328262765"
+              "version": "0.30.23.60470",
+              "templateHash": "3966141451576704697"
             }
           },
           "resources": []

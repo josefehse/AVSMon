@@ -12,33 +12,26 @@
                         {
                             "name": "resourceScope",
                             "type": "Microsoft.Common.ResourceScope",
-                            "instanceDetailsLabel": "AVS Mon Deployment Details"
-                        },
-						{
-                            "name": "subscriptionAPI",
-                            "type": "Microsoft.Solutions.ArmApiControl",
-                            "request": {
-                                "method": "GET",
-                                "path": "subscriptions?api-version=2022-12-01"
+                            "instanceDetailsLabel": "AVS Mon Deployment Details",
+                            "location": {
+                                "resourceTypes": [
+                                    "Microsoft.Insights/components",
+                                    "Microsoft.KeyVault/vaults",
+                                    "Microsoft.ManagedIdentity/userAssignedIdentities",
+                                    "Microsoft.OperationalInsights/workspaces",
+                                    "Microsoft.Resources/deploymentScripts",
+                                    "Microsoft.Storage/storageAccounts",
+                                    "Microsoft.Web/serverfarms",
+                                    "Microsoft.Web/sites"
+                                ]
                             }
                         }
                     ]
                 },
-				{
-					"name": "Configuration",
-					"label": "Configuration",
-					"elements": [
-						{
-							"name": "AppInsightsLocationsAPI",
-							"type": "Microsoft.Solutions.ArmApiControl",
-							"request": {
-								"method": "GET",
-								"path": "[concat(steps('basics').resourceScope.subscription.id,'/providers/microsoft.insights?api-version=2014-04-01-preview')]",
-								"transforms": {
-									"list": "resourceTypes[?resourceType == 'components/operations'].locations[].{label: @, value: @}"
-								}
-							}
-						},
+                {
+                    "name": "Configuration",
+                    "label": "Configuration",
+                    "elements": [
                         {
                             "name": "instanceName",
                             "type": "Microsoft.Common.TextBox",
@@ -47,23 +40,23 @@
                             "defaultValue": "avsmon",
                             "toolTip": "Instance Name for the AVS Mon to be used as a prefix.",
                             "constraints": {
-								"required": true,
-                    			"regex": "^[a-z0-9]{1,8}$",
-                    			"validationMessage": "Only alphanumeric lowercase characters are allowed, and the value must be 1-8 characters long."
+                                "required": true,
+                                "regex": "^[a-z0-9]{1,8}$",
+                                "validationMessage": "Only alphanumeric lowercase characters are allowed, and the value must be 1-8 characters long."
                             },
                             "visible": true
                         },
-						{
+                        {
                             "name": "virtualNetworkSelection",
                             "type": "Microsoft.Solutions.ResourceSelector",
                             "visible": "true",
                             "label": "Virtual network",
                             "resourceType": "Microsoft.Network/virtualNetworks"
-
                         },
                         {
                             "name": "subnetsApi",
                             "type": "Microsoft.Solutions.ArmApiControl",
+                            "condition": "[not(empty(steps('Configuration').virtualNetworkSelection))]",
                             "request": {
                                 "method": "GET",
                                 "path": "[concat(steps('Configuration').virtualNetworkSelection.id, '/subnets?api-version=2022-05-01')]"
@@ -115,7 +108,7 @@
                             },
                             "visible": "[equals(steps('Configuration').LAWStatus, 'New')]"
                         },
-						{
+                        {
                             "name": "logAnalyticsWorkspaceSelection",
                             "type": "Microsoft.Solutions.ResourceSelector",
                             "visible": "[equals(steps('Configuration').LAWStatus, 'Existing')]",
@@ -123,134 +116,123 @@
                             "resourceType": "Microsoft.OperationalInsights/workspaces",
                             "options": {}
                         },
-						{
-							"name": "storageAccountSelector",
-							"type": "Microsoft.Storage.StorageAccountSelector",
-							"label": "Storage account",
-							"toolTip": "",
-							"defaultValue": {
-								"name": "storageaccount01",
-								"type": "Standard_LRS"
-							},
-							"scope": {
-								"location": "[steps('basics').resourceScope.location.name]",
-								"resourceGroupName": "[steps('basics').resourceScope.resourceGroup.name]",
-								"subscriptionId": "[last(split(steps('basics').resourceScope.subscription.id,'/'))]"
-							},
-							"constraints": {
-								"allowedTypes": []
-							},
-							"options": {
-								"hideExisting": false
-							},
-							"visible": true
-						},
                         {
-                            "name": "keyvaultname",
+                            "name": "storageAccountSelector",
+                            "type": "Microsoft.Storage.StorageAccountSelector",
+                            "label": "Storage account",
+                            "toolTip": "",
+                            "defaultValue": {
+                                "name": "",
+                                "type": "Standard_LRS"
+                            },
+                            "constraints": {
+                                "allowedTypes": []
+                            },
+                            "options": {
+                                "hideExisting": false
+                            },
+                            "visible": true
+                        },
+                        {
+                            "name": "keyVaultName",
                             "type": "Microsoft.Common.TextBox",
                             "label": "KeyVault Name",
                             "subLabel": "",
                             "defaultValue": "avsmonkv",
                             "toolTip": "AVS Mon keyvault name.",
                             "constraints": {
-								"required": true,
-                    			"regex": "^[a-z0-9]{1,16}$",
-                    			"validationMessage": "Only alphanumeric lowercase characters are allowed, and the value must be 1-16 characters long."
+                                "required": true,
+                                "regex": "^[a-z0-9]{1,16}$",
+                                "validationMessage": "Only alphanumeric lowercase characters are allowed, and the value must be 1-16 characters long."
                             },
                             "visible": true
                         },
-												{
-							"name": "AppInsightsLocationsAPI",
-							"type": "Microsoft.Solutions.ArmApiControl",
-							"request": {
-								"method": "GET",
-								"path": "[concat(steps('basics').resourceScope.subscription.id,'/providers/microsoft.insights?api-version=2014-04-01-preview')]",
-								"transforms": {
-									"list": "resourceTypes[?resourceType == 'components/operations'].locations[].{label: @, value: @}"
-								}
-							}
-						},
-						{
-							"name": "AppInsightsLocation",
-							"type": "Microsoft.Common.DropDown",
-							"label": "Location for App Insights",
-							"multiselect": false,
-							"defaultValue": "",
-							"toolTip": "Subscription to deploy resources to.",
-							"filter": true,
-							"filterPlaceholder": "Filter Locations...",
-							"defaultDescription": "A value for selection",
-							"constraints": {
-								"allowedValues": "[steps('Configuration').AppInsightsLocationsAPI.transformed.list]",
-								"required": true
-							},
-							"visible": true
-						},
                         {
-							"name": "collectTelemetry",
-							"type": "Microsoft.Common.CheckBox",
-							"label": "Collect deployment telemetry.",
-							"toolTip": "Microsoft can correlate these resources used to support the deployments. Microsoft collects this information to provide the best experiences with their products and to operate their business. The telemetry is collected through customer usage attribution. The data is collected and governed by Microsoft's privacy policies, located at https://www.microsoft.com/trustcenter.",
-							"constraints": {
-								"required": false,
-								"validationMessage": "Please acknowledge the legal conditions."
-							},
-							"defaultValue": true
-							
-						}
-					]
-				},
+                            "name": "collectTelemetry",
+                            "type": "Microsoft.Common.CheckBox",
+                            "label": "Collect deployment telemetry.",
+                            "toolTip": "Microsoft can correlate these resources used to support the deployments. Microsoft collects this information to provide the best experiences with their products and to operate their business. The telemetry is collected through customer usage attribution. The data is collected and governed by Microsoft's privacy policies, located at https://www.microsoft.com/trustcenter.",
+                            "constraints": {
+                                "required": false,
+                                "validationMessage": "Please acknowledge the legal conditions."
+                            },
+                            "defaultValue": true
+                        }
+                    ]
+                },
                 {
                     "name": "AVSConfiguration",
                     "label": "AVS Configuration",
                     "elements": [
                         {
-                            "name": "avsNSXTAdmin",
-                            "type": "Microsoft.Common.TextBox",
-                            "label": "AVS NSXT Admin Name",
-                            "subLabel": "",
-                            "defaultValue": "",
-                            "toolTip": "",
-                            "constraints": {
-                                "required": true
-                            },
+                            "name": "avsNSXT",
+                            "type": "Microsoft.Common.Section",
+                            "label": "AVS NSXT",
+                            "elements": [
+                                {
+                                    "name": "avsNSXTAdmin",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "label": "Admin Username",
+                                    "subLabel": "",
+                                    "defaultValue": "",
+                                    "toolTip": "",
+                                    "constraints": {
+                                        "required": true
+                                    },
+                                    "visible": true
+                                },
+                                {
+                                    "name": "avsNSXTAdminPassword",
+                                    "type": "Microsoft.Common.PasswordBox",
+                                    "label": "Admin Password",
+                                    "subLabel": "",
+                                    "defaultValue": "",
+                                    "toolTip": "",
+                                    "constraints": {
+                                        "required": true,
+                                        "secret": true
+                                    },
+                                    "options": {
+                                        "hideConfirmation": true
+                                    },
+                                    "visible": true
+                                }
+                            ],
                             "visible": true
                         },
                         {
-                            "name": "avsNSXTAdminPassword",
-                            "type": "Microsoft.Common.PasswordBox",
-                            "label": "AVS NSXT Admin Password",
-                            "subLabel": "",
-                            "defaultValue": "",
-                            "toolTip": "",
-                            "constraints": {
-                                "required": true,
-                                "secret": true
-                            },
-                            "visible": true
-                        },
-                        {
-                            "name": "avsvCenterAdmin",
-                            "type": "Microsoft.Common.TextBox",
-                            "label": "AVS vCenter Admin Username",
-                            "subLabel": "",
-                            "defaultValue": "",
-                            "toolTip": "",
-                            "constraints": {
-                                "required": true
-                            },
-                            "visible": true
-                        },
-                        {
-                            "name": "avsvCenterAdminPassword",
-                            "type": "Microsoft.Common.PasswordBox",
-                            "label": "AVS vCenter Admin Password",
-                            "subLabel": "",
-                            "defaultValue": "",
-                            "toolTip": "",
-                            "constraints": {
-                                "required": true
-                            },
+                            "name": "avsvCenter",
+                            "type": "Microsoft.Common.Section",
+                            "label": "AVS vCenter",
+                            "elements": [
+                                {
+                                    "name": "avsvCenterAdmin",
+                                    "type": "Microsoft.Common.TextBox",
+                                    "label": "Admin Username",
+                                    "subLabel": "",
+                                    "defaultValue": "",
+                                    "toolTip": "",
+                                    "constraints": {
+                                        "required": true
+                                    },
+                                    "visible": true
+                                },
+                                {
+                                    "name": "avsvCenterAdminPassword",
+                                    "type": "Microsoft.Common.PasswordBox",
+                                    "label": "Admin Password",
+                                    "subLabel": "",
+                                    "defaultValue": "",
+                                    "toolTip": "",
+                                    "constraints": {
+                                        "required": true
+                                    },
+                                    "options": {
+                                        "hideConfirmation": true
+                                      },
+                                    "visible": true
+                                }
+                            ],
                             "visible": true
                         },
                         {
@@ -267,8 +249,7 @@
                         }
                     ]
                 },
-                
-				{
+                {
                     "name": "tags",
                     "label": "Tags",
                     "elements": [
@@ -276,36 +257,42 @@
                             "name": "tagsByResource",
                             "type": "Microsoft.Common.TagsByResource",
                             "resources": [
-                                "All"
+                                "Microsoft.Insights/components",
+                                "Microsoft.KeyVault/vaults",
+                                "Microsoft.ManagedIdentity/userAssignedIdentities",
+                                "Microsoft.OperationalInsights/workspaces",
+                                "Microsoft.Resources/deploymentScripts",
+                                "Microsoft.Storage/storageAccounts",
+                                "Microsoft.Web/serverfarms",
+                                "Microsoft.Web/sites"
                             ]
                         }
                     ]
                 }
-			]
-		},
+            ]
+        },
         "outputs": {
             "parameters": {
-				"storageAccountName" : "[steps('Configuration').storageAccountSelector.name]",
-				"location": "[steps('basics').resourceScope.location.name]",
-				"functionname": "[concat(steps('Configuration').instanceName,'-','function')]",
-				"keyvaultName": "[steps('Configuration').keyvaultname]",
-				"vnetId": "[steps('Configuration').virtualNetworkSelection.id]",
-                "subnetId": "[concat(steps('Configuration').virtualNetworkSelection.id, '/subnets/', steps('Configuration').subnet.value)]",
+                "functionname": "[concat(steps('Configuration').instanceName,'-','function')]",
+                "keyvaultName": "[steps('Configuration').keyVaultName]",
+                "location": "[steps('basics').resourceScope.location.name]",
+                "logAnalyticsWorkspaceName": "[if(equals(steps('Configuration').LAWStatus, 'Existing'),'',steps('Configuration').LogAnalyticsWorkspaceResourceNew)]",
+                "logAnalyticsWorkspaceResourceId": "[if(equals(steps('Configuration').LAWStatus, 'Existing'),steps('Configuration').logAnalyticsWorkspaceSelection.id,'')]",
+                "storageAccountName": "[steps('Configuration').storageAccountSelector.name]",
+                "avsNSXTAdmin": "[steps('AVSConfiguration').avsNSXT.avsNSXTAdmin]",
+                "avsNSXTAdminPassword": "[steps('AVSConfiguration').avsNSXT.avsNSXTAdminPassword]",
+                "avsvCenterAdmin": "[steps('AVSConfiguration').avsvCenter.avsvCenterAdmin]",
+                "avsvCenterAdminPassword": "[steps('AVSConfiguration').avsvCenter.avsvCenterAdminPassword]",
                 "collectTelemetry": "[steps('Configuration').collectTelemetry]",
                 "createNewLogAnalyticsWS": "[equals(steps('Configuration').LAWStatus, 'New')]",
-                "createNewStorageAccount": "[equals(steps('Configuration').storageAccountSelector.newOrExisting,'new')]",	
-				"logAnalyticsWorkspaceName": "[if(equals(steps('Configuration').LAWStatus, 'Existing'),steps('Configuration').logAnalyticsWorkspaceSelection.name,steps('Configuration').LogAnalyticsWorkspaceResourceNew)]",
-				"appInsightsLocation" : "[steps('Configuration').AppInsightsLocation.value]",
-                "avsNSXTAdmin": "[steps('AVSConfiguration').avsNSXTAdmin]",
-                "avsNSXTAdminPassword": "[steps('AVSConfiguration').avsNSXTAdminPassword]",
-                "avsvCenterAdmin": "[steps('AVSConfiguration').avsvCenterAdmin]",
-                "avsvCenterAdminPassword": "[steps('AVSConfiguration').avsvCenterAdminPassword]",
-                "vCenterFQDN": "[steps('AVSConfiguration').vCenterFQDN]",
-                "Tags": "[steps('tags').tagsByResource]"
-			},
-			"kind": "ResourceGroup",
+                "createNewStorageAccount": "[equals(steps('Configuration').storageAccountSelector.newOrExisting,'new')]",
+                "subnetId": "[concat(steps('Configuration').virtualNetworkSelection.id, '/subnets/', steps('Configuration').subnet)]",
+                "Tags": "[steps('tags').tagsByResource]",
+                "vCenterFQDN": "[steps('AVSConfiguration').vCenterFQDN]"
+            },
+            "kind": "ResourceGroup",
             "location": "[steps('basics').resourceScope.location.name]",
             "resourceGroupId": "[steps('basics').resourceScope.resourceGroup.id]"
-		}
-	}
+        }
+    }
 }

@@ -5,6 +5,7 @@
 // The Azure function will be of the Premium SKU to allow for longer execution times and vnet integration
 // The Azure function will be configured to run every 15 minutes (?)
 // The Azure function will be configured to write to the Log Analytics workspace
+targetScope = 'resourceGroup'
 param storageAccountName string
 param location string = resourceGroup().location
 param functionname string = 'avsmonbami1t'

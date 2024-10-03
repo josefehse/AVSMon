@@ -135,7 +135,7 @@
 							"scope": {
 								"location": "[steps('basics').resourceScope.location.name]",
 								"resourceGroupName": "[steps('basics').resourceScope.resourcegroup.name]",
-								"subscriptionId": "[last(split(steps('basics').resourceScope.subscription.id))]"
+								"subscriptionId": "[last(split(steps('basics').resourceScope.subscription.id,'/'))]"
 							},
 							"constraints": {
 								"allowedTypes": []

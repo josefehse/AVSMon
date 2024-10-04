@@ -60,7 +60,6 @@
                             "visible": "true",
                             "label": "Virtual network",
                             "resourceType": "Microsoft.Network/virtualNetworks"
-
                         },
                         {
                             "name": "subnetsApi",
@@ -122,8 +121,7 @@
                             "type": "Microsoft.Solutions.ResourceSelector",
                             "visible": "[equals(steps('Configuration').LAWStatus, 'Existing')]",
                             "label": "Log analytics workspace",
-                            "resourceType": "Microsoft.OperationalInsights/workspaces",
-                            "options": {}
+                            "resourceType": "Microsoft.OperationalInsights/workspaces"
                         },
 						{
 							"name": "storageAccountSelector",
@@ -168,6 +166,13 @@
                             },
                             "visible": true
                         },
+						{
+                            "name": "KeyVaultSelection",
+                            "type": "Microsoft.Solutions.ResourceSelector",
+                            "visible": "[equals(steps('Configuration').KeyVaultStatus, 'Existing')]",
+                            "label": "Key Vault",
+                            "resourceType": "Microsoft.KeyVault/vaults"
+                        },
                         {
                             "name": "keyvaultname",
                             "type": "Microsoft.Common.TextBox",
@@ -177,12 +182,10 @@
                             "toolTip": "AVS Mon keyvault name.",
                             "constraints": {
 								"required": true,
-                                "validations": [
-                                    {
-                                        "isValid": "[steps('Configuration').keyVault_checkNameAvailability.nameAvailable]",
-                                        "message": "[steps('Configuration').keyVault_checkNameAvailability.message]"
-                                    }
-                                ]
+                                "validations": [{
+                                    "isValid": "[steps('Configuration').keyVault_checkNameAvailability.nameAvailable]",
+                                    "message": "[steps('Configuration').keyVault_checkNameAvailability.message]"
+                                }]
                             },
                             "visible": "[not(equals(steps('Configuration').KeyVaultStatus, 'Existing'))]"
                         },
@@ -197,14 +200,6 @@
                                     "type": "Microsoft.KeyVault/vaults"
                                 }
                             }
-                        },
-                        {
-                            "name": "keyvaultResourceSelector",
-                            "type": "Microsoft.Solutions.ResourceSelector",
-                            "visible": "[equals(steps('Configuration').useExistingKeyvault, 'Existing')]",
-                            "label": "Key Vault",
-                            "resourceType": "Microsoft.KeyVault/vaults",
-                            "options": {}
                         },
                         {
 							"name": "collectTelemetry",
@@ -271,7 +266,7 @@
                             "label": 
                                 { 
                                     "password": "AVS vCenter Admin Password"
-                            },
+                            	},
                             "toolTip": "",
                             "constraints": {
                                 "required": true
@@ -316,7 +311,7 @@
 				"storageAccountName" : "[steps('Configuration').storageAccountSelector.name]",
 				"location": "[steps('basics').resourceScope.location.name]",
 				"functionname": "[concat(steps('Configuration').instanceName,'-','function')]",
-				"keyvaultName": "[if(equals(steps('Configuration').KeyVaultStatus, 'Existing'),steps('Configuration').keyvaultResourceSelector.name,steps('Configuration').keyvaultname)]",
+				"keyvaultName": "[if(equals(steps('Configuration').KeyVaultStatus, 'Existing'),steps('Configuration').KeyVaultSelection.name,steps('Configuration').keyvaultname)]",
                 "useExistingKeyvault": "[not(equals(steps('Configuration').KeyVaultStatus, 'New'))]",
                 "subnetId": "[concat(steps('Configuration').virtualNetworkSelection.id, '/subnets/', steps('Configuration').subnet)]",
                 "collectTelemetry": "[steps('Configuration').collectTelemetry]",

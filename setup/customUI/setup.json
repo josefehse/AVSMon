@@ -152,14 +152,30 @@
                             "type": "Microsoft.Common.TextBox",
                             "label": "KeyVault Name",
                             "subLabel": "",
-                            "defaultValue": "avsmonkv",
+                            "defaultValue": "",
                             "toolTip": "AVS Mon keyvault name.",
                             "constraints": {
 								"required": true,
                     			"regex": "^[a-z0-9]{1,16}$",
-                    			"validationMessage": "Only alphanumeric lowercase characters are allowed, and the value must be 1-16 characters long."
+                    			"validationMessage": "Only alphanumeric lowercase characters are allowed, and the value must be 1-16 characters long.",
+                                "validations": {
+                                    "isValid": "[steps('Configuration').keyVault_checkNameAvailability.nameAvailable]",
+                                    "message": "[steps('Configuration').keyVault_checkNameAvailability.message]"
+                                }
                             },
                             "visible": true
+                        },
+                        {
+                            "name": "keyVault_checkNameAvailability",
+                            "type": "Microsoft.Solutions.ArmApiControl",
+                            "request": {
+                                "method": "POST",
+                                "path": "[concat(steps('basics').resourceScope.subscription.id, '/providers/Microsoft.KeyVault/checkNameAvailability?api-version=2022-07-01')]",
+                                "body": {
+                                    "name": "[steps('Configuration').keyvaultname]",
+                                    "type": "Microsoft.KeyVault/vaults"
+                                }
+                            }
                         },
                         {
 							"name": "collectTelemetry",
@@ -194,9 +210,9 @@
                         {
                             "name": "avsNSXTAdminPassword",
                             "type": "Microsoft.Common.PasswordBox",
-                            "label": "AVS NSXT Admin Password",
-                            "subLabel": "",
-                            "defaultValue": "",
+                            "label": 
+                                { "password":"AVS NSXT Admin Password"
+                            },
                             "toolTip": "",
                             "constraints": {
                                 "required": true,
@@ -223,9 +239,10 @@
                         {
                             "name": "avsvCenterAdminPassword",
                             "type": "Microsoft.Common.PasswordBox",
-                            "label": "AVS vCenter Admin Password",
-                            "subLabel": "",
-                            "defaultValue": "",
+                            "label": 
+                                { 
+                                    "password": "AVS vCenter Admin Password"
+                            },
                             "toolTip": "",
                             "constraints": {
                                 "required": true

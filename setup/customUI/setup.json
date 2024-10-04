@@ -290,7 +290,7 @@
 				"functionname": "[concat(steps('Configuration').instanceName,'-','function')]",
 				"keyvaultName": "[steps('Configuration').keyvaultname]",
 				"vnetId": "[steps('Configuration').virtualNetworkSelection.id]",
-                "subnetId": "[concat(steps('Configuration').virtualNetworkSelection.id, '/subnets/', steps('Configuration').subnet.value)]",
+                "subnetId": "[concat(steps('Configuration').virtualNetworkSelection.id, '/subnets/', steps('Configuration').subnet)]",
                 "collectTelemetry": "[steps('Configuration').collectTelemetry]",
                 "createNewLogAnalyticsWS": "[equals(steps('Configuration').LAWStatus, 'New')]",
                 "createNewStorageAccount": "[equals(steps('Configuration').storageAccountSelector.newOrExisting,'new')]",	

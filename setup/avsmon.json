@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.29.47.4906",
-      "templateHash": "18404189742925558179"
+      "templateHash": "12564204255447769166"
     }
   },
   "parameters": {
@@ -21,9 +21,6 @@
       "defaultValue": "avsmonbami1t"
     },
     "keyvaultName": {
-      "type": "string"
-    },
-    "vnetId": {
       "type": "string"
     },
     "subnetId": {
@@ -49,9 +46,6 @@
         "environment": "dev",
         "project": "avsmon"
       }
-    },
-    "appInsightsLocation": {
-      "type": "string"
     },
     "avsNSXTAdmin": {
       "type": "string"
@@ -432,7 +426,7 @@
       "apiVersion": "2020-02-02",
       "name": "[parameters('functionname')]",
       "tags": "[parameters('Tags')]",
-      "location": "[parameters('appInsightsLocation')]",
+      "location": "[parameters('location')]",
       "kind": "web",
       "properties": {
         "Application_Type": "web",

@@ -148,6 +148,27 @@
 							"visible": true
 						},
                         {
+                            "name": "KeyVaultStatus",
+                            "type": "Microsoft.Common.OptionsGroup",
+                            "label": "Use New or Existing KeyVault",
+                            "toolTip": "This will be the KeyVault used to store secrets.",
+                            "defaultValue": "Existing",
+                            "constraints": {
+                                "allowedValues": [
+                                    {
+                                        "label": "New",
+                                        "value": "New"
+                                    },
+                                    {
+                                        "label": "Existing",
+                                        "value": "Existing"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            "visible": true
+                        },
+                        {
                             "name": "keyvaultname",
                             "type": "Microsoft.Common.TextBox",
                             "label": "KeyVault Name",
@@ -156,14 +177,14 @@
                             "toolTip": "AVS Mon keyvault name.",
                             "constraints": {
 								"required": true,
-                    			"regex": "^[a-z0-9]{1,16}$",
-                    			"validationMessage": "Only alphanumeric lowercase characters are allowed, and the value must be 1-16 characters long.",
-                                "validations": {
-                                    "isValid": "[steps('Configuration').keyVault_checkNameAvailability.nameAvailable]",
-                                    "message": "[steps('Configuration').keyVault_checkNameAvailability.message]"
-                                }
+                                "validations": [
+                                    {
+                                        "isValid": "[steps('Configuration').keyVault_checkNameAvailability.nameAvailable]",
+                                        "message": "[steps('Configuration').keyVault_checkNameAvailability.message]"
+                                    }
+                                ]
                             },
-                            "visible": true
+                            "visible": "[not(equals(steps('Configuration').KeyVaultStatus, 'Existing'))]"
                         },
                         {
                             "name": "keyVault_checkNameAvailability",
@@ -176,6 +197,14 @@
                                     "type": "Microsoft.KeyVault/vaults"
                                 }
                             }
+                        },
+                        {
+                            "name": "keyvaultResourceSelector",
+                            "type": "Microsoft.Solutions.ResourceSelector",
+                            "visible": "[equals(steps('Configuration').useExistingKeyvault, 'Existing')]",
+                            "label": "Key Vault",
+                            "resourceType": "Microsoft.KeyVault/vaults",
+                            "options": {}
                         },
                         {
 							"name": "collectTelemetry",
@@ -267,7 +296,6 @@
                         }
                     ]
                 },
-                
 				{
                     "name": "tags",
                     "label": "Tags",
@@ -288,7 +316,8 @@
 				"storageAccountName" : "[steps('Configuration').storageAccountSelector.name]",
 				"location": "[steps('basics').resourceScope.location.name]",
 				"functionname": "[concat(steps('Configuration').instanceName,'-','function')]",
-				"keyvaultName": "[steps('Configuration').keyvaultname]",
+				"keyvaultName": "[if(equals(steps('Configuration').KeyVaultStatus, 'Existing'),steps('Configuration').keyvaultResourceSelector.name,steps('Configuration').keyvaultname)]",
+                "useExistingKeyvault": "[not(equals(steps('Configuration').KeyVaultStatus, 'New'))]",
                 "subnetId": "[concat(steps('Configuration').virtualNetworkSelection.id, '/subnets/', steps('Configuration').subnet)]",
                 "collectTelemetry": "[steps('Configuration').collectTelemetry]",
                 "createNewLogAnalyticsWS": "[equals(steps('Configuration').LAWStatus, 'New')]",

@@ -10,6 +10,7 @@ param storageAccountName string
 param location string = resourceGroup().location
 param functionname string = 'avsmonbami1t'
 param keyvaultName string
+param useExistingKeyVault bool = false
 //param vnetId string //future use
 param subnetId string
 param collectTelemetry bool = false
@@ -89,7 +90,7 @@ module userIdentityRoleAssignmentRG './modules/roleassignment.bicep' = [for (rol
   }
 }]
 
-resource vault 'Microsoft.KeyVault/vaults@2024-04-01-preview' = {
+resource vault 'Microsoft.KeyVault/vaults@2024-04-01-preview' = if (!useExistingKeyVault) {
   name: keyvaultName
   location: location
   tags: Tags
@@ -110,65 +111,56 @@ resource vault 'Microsoft.KeyVault/vaults@2024-04-01-preview' = {
     enablePurgeProtection: true //CAF
   }
 }
+resource existingVault 'Microsoft.KeyVault/vaults@2024-04-01-preview' existing = if (useExistingKeyVault) {
+  name: keyvaultName
+}
 // Add secret from function
-resource kvsecret1 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+module kvsecret1 './modules/kvsecret.bicep' = {
   name: 'avsNSXTAdmin'
-  tags: Tags
-  parent: vault
-  properties: {
-    attributes: {
-      enabled: true
-    }
-    contentType: 'string'
-    value: avsNSXTAdmin
+  params: {
+    secretname: 'avsNSXTAdmin'
+    secretvalue: avsNSXTAdmin
+    Tags: Tags
+    vaultName: useExistingKeyVault ? existingVault.name : vault.name
   }
 }
-resource kvsecret2 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+module kvsecret2 './modules/kvsecret.bicep' = {
   name: 'avsNSXTAdminPassword'
-  tags: Tags
-  parent: vault
-  properties: {
-    attributes: {
-      enabled: true
-    }
-    contentType: 'string'
-    value: avsNSXTAdminPassword
+  params: {
+    secretname: 'avsNSXTAdminPassword'
+    secretvalue: avsNSXTAdminPassword
+    Tags: Tags
+    vaultName: useExistingKeyVault ? existingVault.name : vault.name
   }
 }
-resource kvsecret3 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+
+module kvsecret3 './modules/kvsecret.bicep' = {
   name: 'avsvCenterAdmin'
-  tags: Tags
-  parent: vault
-  properties: {
-    attributes: {
-      enabled: true
-    }
-    contentType: 'string'
-    value: avsvCenterAdmin
+  params: {
+    secretname: 'avsvCenterAdmin'
+    secretvalue: avsvCenterAdmin
+    Tags: Tags
+    vaultName: useExistingKeyVault ? existingVault.name : vault.name
   }
 }
-resource kvsecret4 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+
+module kvsecret4 './modules/kvsecret.bicep' = {
   name: 'avsvCenterAdminPassword'
-  tags: Tags
-  parent: vault
-  properties: {
-    attributes: {
-      enabled: true
-    }
-    contentType: 'string'
-    value: avsvCenterAdminPassword
+  params: {
+    secretname: 'avsvCenterAdminPassword'
+    secretvalue: avsvCenterAdminPassword
+    Tags: Tags
+    vaultName: useExistingKeyVault ? existingVault.name : vault.name
   }
 }
-resource kvsecret5 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+
+module kvsecret5 './modules/kvsecret.bicep' = {
   name: 'vCenterFQDN'
-  tags: Tags
-  parent: vault
-  properties: {
-    attributes: {
-      enabled: true
-    }
-    contentType: 'string'
-    value: vCenterFQDN
+  params: {
+    secretname: 'vCenterFQDN'
+    secretvalue: vCenterFQDN
+    Tags: Tags
+    vaultName: useExistingKeyVault ? existingVault.name : vault.name
   }
 }
 

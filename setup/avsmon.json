@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.29.47.4906",
-      "templateHash": "12564204255447769166"
+      "templateHash": "8154458060573232084"
     }
   },
   "parameters": {
@@ -22,6 +22,10 @@
     },
     "keyvaultName": {
       "type": "string"
+    },
+    "useExistingKeyVault": {
+      "type": "bool",
+      "defaultValue": false
     },
     "subnetId": {
       "type": "string"
@@ -159,6 +163,7 @@
       "tags": "[parameters('Tags')]"
     },
     {
+      "condition": "[not(parameters('useExistingKeyVault'))]",
       "type": "Microsoft.KeyVault/vaults",
       "apiVersion": "2024-04-01-preview",
       "name": "[parameters('keyvaultName')]",
@@ -180,86 +185,6 @@
         "publicNetworkAccess": "Enabled",
         "enablePurgeProtection": true
       }
-    },
-    {
-      "type": "Microsoft.KeyVault/vaults/secrets",
-      "apiVersion": "2021-11-01-preview",
-      "name": "[format('{0}/{1}', parameters('keyvaultName'), 'avsNSXTAdmin')]",
-      "tags": "[parameters('Tags')]",
-      "properties": {
-        "attributes": {
-          "enabled": true
-        },
-        "contentType": "string",
-        "value": "[parameters('avsNSXTAdmin')]"
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyvaultName'))]"
-      ]
-    },
-    {
-      "type": "Microsoft.KeyVault/vaults/secrets",
-      "apiVersion": "2021-11-01-preview",
-      "name": "[format('{0}/{1}', parameters('keyvaultName'), 'avsNSXTAdminPassword')]",
-      "tags": "[parameters('Tags')]",
-      "properties": {
-        "attributes": {
-          "enabled": true
-        },
-        "contentType": "string",
-        "value": "[parameters('avsNSXTAdminPassword')]"
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyvaultName'))]"
-      ]
-    },
-    {
-      "type": "Microsoft.KeyVault/vaults/secrets",
-      "apiVersion": "2021-11-01-preview",
-      "name": "[format('{0}/{1}', parameters('keyvaultName'), 'avsvCenterAdmin')]",
-      "tags": "[parameters('Tags')]",
-      "properties": {
-        "attributes": {
-          "enabled": true
-        },
-        "contentType": "string",
-        "value": "[parameters('avsvCenterAdmin')]"
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyvaultName'))]"
-      ]
-    },
-    {
-      "type": "Microsoft.KeyVault/vaults/secrets",
-      "apiVersion": "2021-11-01-preview",
-      "name": "[format('{0}/{1}', parameters('keyvaultName'), 'avsvCenterAdminPassword')]",
-      "tags": "[parameters('Tags')]",
-      "properties": {
-        "attributes": {
-          "enabled": true
-        },
-        "contentType": "string",
-        "value": "[parameters('avsvCenterAdminPassword')]"
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyvaultName'))]"
-      ]
-    },
-    {
-      "type": "Microsoft.KeyVault/vaults/secrets",
-      "apiVersion": "2021-11-01-preview",
-      "name": "[format('{0}/{1}', parameters('keyvaultName'), 'vCenterFQDN')]",
-      "tags": "[parameters('Tags')]",
-      "properties": {
-        "attributes": {
-          "enabled": true
-        },
-        "contentType": "string",
-        "value": "[parameters('vCenterFQDN')]"
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyvaultName'))]"
-      ]
     },
     {
       "condition": "[parameters('createNewStorageAccount')]",
@@ -580,6 +505,336 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('userIdentityName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "avsNSXTAdmin",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "secretname": {
+            "value": "avsNSXTAdmin"
+          },
+          "secretvalue": {
+            "value": "[parameters('avsNSXTAdmin')]"
+          },
+          "Tags": {
+            "value": "[parameters('Tags')]"
+          },
+          "vaultName": "[if(parameters('useExistingKeyVault'), createObject('value', parameters('keyvaultName')), createObject('value', parameters('keyvaultName')))]"
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.29.47.4906",
+              "templateHash": "6029763531644516438"
+            }
+          },
+          "parameters": {
+            "secretname": {
+              "type": "string"
+            },
+            "secretvalue": {
+              "type": "securestring"
+            },
+            "Tags": {
+              "type": "object"
+            },
+            "vaultName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-11-01-preview",
+              "name": "[format('{0}/{1}', parameters('vaultName'), parameters('secretname'))]",
+              "tags": "[parameters('Tags')]",
+              "properties": {
+                "attributes": {
+                  "enabled": true
+                },
+                "contentType": "string",
+                "value": "[parameters('secretvalue')]"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyvaultName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "avsNSXTAdminPassword",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "secretname": {
+            "value": "avsNSXTAdminPassword"
+          },
+          "secretvalue": {
+            "value": "[parameters('avsNSXTAdminPassword')]"
+          },
+          "Tags": {
+            "value": "[parameters('Tags')]"
+          },
+          "vaultName": "[if(parameters('useExistingKeyVault'), createObject('value', parameters('keyvaultName')), createObject('value', parameters('keyvaultName')))]"
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.29.47.4906",
+              "templateHash": "6029763531644516438"
+            }
+          },
+          "parameters": {
+            "secretname": {
+              "type": "string"
+            },
+            "secretvalue": {
+              "type": "securestring"
+            },
+            "Tags": {
+              "type": "object"
+            },
+            "vaultName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-11-01-preview",
+              "name": "[format('{0}/{1}', parameters('vaultName'), parameters('secretname'))]",
+              "tags": "[parameters('Tags')]",
+              "properties": {
+                "attributes": {
+                  "enabled": true
+                },
+                "contentType": "string",
+                "value": "[parameters('secretvalue')]"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyvaultName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "avsvCenterAdmin",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "secretname": {
+            "value": "avsvCenterAdmin"
+          },
+          "secretvalue": {
+            "value": "[parameters('avsvCenterAdmin')]"
+          },
+          "Tags": {
+            "value": "[parameters('Tags')]"
+          },
+          "vaultName": "[if(parameters('useExistingKeyVault'), createObject('value', parameters('keyvaultName')), createObject('value', parameters('keyvaultName')))]"
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.29.47.4906",
+              "templateHash": "6029763531644516438"
+            }
+          },
+          "parameters": {
+            "secretname": {
+              "type": "string"
+            },
+            "secretvalue": {
+              "type": "securestring"
+            },
+            "Tags": {
+              "type": "object"
+            },
+            "vaultName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-11-01-preview",
+              "name": "[format('{0}/{1}', parameters('vaultName'), parameters('secretname'))]",
+              "tags": "[parameters('Tags')]",
+              "properties": {
+                "attributes": {
+                  "enabled": true
+                },
+                "contentType": "string",
+                "value": "[parameters('secretvalue')]"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyvaultName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "avsvCenterAdminPassword",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "secretname": {
+            "value": "avsvCenterAdminPassword"
+          },
+          "secretvalue": {
+            "value": "[parameters('avsvCenterAdminPassword')]"
+          },
+          "Tags": {
+            "value": "[parameters('Tags')]"
+          },
+          "vaultName": "[if(parameters('useExistingKeyVault'), createObject('value', parameters('keyvaultName')), createObject('value', parameters('keyvaultName')))]"
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.29.47.4906",
+              "templateHash": "6029763531644516438"
+            }
+          },
+          "parameters": {
+            "secretname": {
+              "type": "string"
+            },
+            "secretvalue": {
+              "type": "securestring"
+            },
+            "Tags": {
+              "type": "object"
+            },
+            "vaultName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-11-01-preview",
+              "name": "[format('{0}/{1}', parameters('vaultName'), parameters('secretname'))]",
+              "tags": "[parameters('Tags')]",
+              "properties": {
+                "attributes": {
+                  "enabled": true
+                },
+                "contentType": "string",
+                "value": "[parameters('secretvalue')]"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyvaultName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "vCenterFQDN",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "secretname": {
+            "value": "vCenterFQDN"
+          },
+          "secretvalue": {
+            "value": "[parameters('vCenterFQDN')]"
+          },
+          "Tags": {
+            "value": "[parameters('Tags')]"
+          },
+          "vaultName": "[if(parameters('useExistingKeyVault'), createObject('value', parameters('keyvaultName')), createObject('value', parameters('keyvaultName')))]"
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.29.47.4906",
+              "templateHash": "6029763531644516438"
+            }
+          },
+          "parameters": {
+            "secretname": {
+              "type": "string"
+            },
+            "secretvalue": {
+              "type": "securestring"
+            },
+            "Tags": {
+              "type": "object"
+            },
+            "vaultName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-11-01-preview",
+              "name": "[format('{0}/{1}', parameters('vaultName'), parameters('secretname'))]",
+              "tags": "[parameters('Tags')]",
+              "properties": {
+                "attributes": {
+                  "enabled": true
+                },
+                "contentType": "string",
+                "value": "[parameters('secretvalue')]"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyvaultName'))]"
       ]
     },
     {

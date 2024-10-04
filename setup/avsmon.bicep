@@ -10,7 +10,7 @@ param storageAccountName string
 param location string = resourceGroup().location
 param functionname string = 'avsmonbami1t'
 param keyvaultName string
-param vnetId string
+//param vnetId string //future use
 param subnetId string
 param collectTelemetry bool = false
 param createNewLogAnalyticsWS bool = true
@@ -20,7 +20,6 @@ param Tags object = {
   environment: 'dev'
   project: 'avsmon'
 }
-param appInsightsLocation string
 
 param avsNSXTAdmin string
 @secure()
@@ -400,7 +399,7 @@ resource azfunctionsiteconfig 'Microsoft.Web/sites/config@2021-03-01' = {
 resource appinsights 'Microsoft.Insights/components@2020-02-02' = {
   name: functionname
   tags: Tags
-  location: appInsightsLocation
+  location: location
   kind: 'web'
   properties: {
     Application_Type: 'web'

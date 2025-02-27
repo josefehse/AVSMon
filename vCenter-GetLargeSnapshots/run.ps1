@@ -52,7 +52,7 @@ Write-Output $jsonArray
 Send-LogToLogAnalytics -CustomerId $CustomerId `
                          -SharedKey $sharedKey `
                          -Log $jsonArray `
-                         -LogType "VMsLargeSnapshots"
+                         -LogType $LogType
 
 # Disconnect from vCenter Server
 Disconnect-VIServer -Confirm:$false

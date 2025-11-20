@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="3tpwbgzbdDmuxxKaeOBF" name="Page-1">
-        <mxGraphModel dx="1484" dy="508" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="1217" dy="508" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -44,13 +44,13 @@
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="16" value="" style="group" vertex="1" connectable="0" parent="1">
-                    <mxGeometry x="703" y="251" width="88" height="89" as="geometry"/>
+                    <mxGeometry x="703" y="251" width="77" height="79" as="geometry"/>
                 </mxCell>
                 <mxCell id="13" value="Dashboards" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/analytics/Azure_Workbooks.svg;" vertex="1" parent="16">
-                    <mxGeometry x="20" y="21" width="68" height="68" as="geometry"/>
+                    <mxGeometry x="17.5" y="18.640449438202246" width="59.5" height="59.5" as="geometry"/>
                 </mxCell>
                 <mxCell id="14" value="" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/other/Grafana.svg;" vertex="1" parent="16">
-                    <mxGeometry width="68" height="52.800000000000004" as="geometry"/>
+                    <mxGeometry width="59.5" height="46.2" as="geometry"/>
                 </mxCell>
                 <mxCell id="18" style="edgeStyle=none;html=1;" edge="1" parent="1" source="17" target="10">
                     <mxGeometry relative="1" as="geometry"/>
